@@ -1,23 +1,73 @@
-import logo from './logo.svg';
+import React, {useState} from "react";
 import './App.css';
 
 function App() {
+  const [taskList, setTaskList] = useState([]);
+  const [inputTask, setInputTask] = useState('');
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    const newTask = [
+      ...taskList, 
+      {
+        id: Date.now(),
+        taskName: inputTask,
+        completed: false
+      }]
+
+      setTaskList(newTask);
+      setInputTask('');
+  }
+
+const toggleCompleted = (clickedTaskId) => {
+  const newList = taskList.map((item) => {
+    if (item.id === clickedTaskId) {
+      return {
+        ...item,
+        completed: !item.completed
+      }
+    }
+    else {
+      return item
+    }
+  })
+  setTaskList(newList);
+}
+
+const clearCompleted = () => {
+  const clearSelected = taskList.filter(task => task.completed !== true);
+  setTaskList(clearSelected);
+}
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <main className="App-main">
+        <form>
+          <input 
+          type="text" 
+          placeholder="name task here"
+          onChange={(e) => setInputTask(e.target.value)}
+          value={inputTask}
+           />
+           <button onClick= {handleSubmit}
+           >submit</button>
+        </form>
+
+        {
+          taskList.map(task => {
+            return(
+            <button 
+            key={task.id} 
+            onClick={ () => toggleCompleted(task.id)}
+            className={`task${task.completed === true ? ' completed' : ''}`}
+            >{task.taskName}</button>
+            )
+          })
+        }
+        <button onClick={clearCompleted}>clear completed</button>
+        <button onClick={() => setTaskList([])}>clear all</button>
+      </main>
     </div>
   );
 }
